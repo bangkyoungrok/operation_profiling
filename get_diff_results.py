@@ -10,8 +10,7 @@ import torch.nn.functional as F
 def get_diff_norm(x, y):
     
     diff = torch.abs(x-y).mean(dim=0)
-    diff_mean = torch.abs(x-y)
-    diff_mean = torch.mean(diff_mean)
+    diff_mean = torch.abs(x-y).mean()
     base_mean = torch.mean(y)
     mean = torch.mean(x)
     diff_norm_L1 = torch.norm(diff, p=1)
