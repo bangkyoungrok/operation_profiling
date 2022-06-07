@@ -1,38 +1,32 @@
-import torch 
 import pickle
-import pandas as pd
-from pprint import pprint
+import torch
+import torch.nn as nn
+import numpy as np
 
-device_list = ['gpu', 'tpu']
-op_list = ['exp', 'softmax', 'GeLU', 'tanh', 'sigmoid', 'swish']
-result = {}
-for op in op_list:
-    result[op] = {}
-    for device in device_list:
-        with open(f"./tensors/{device}_output/{device}_torch_{op}_output.pickle", "rb") as fr:
-            result[op][device] = pickle.load(fr)
-        
-mean_result = []
+ranges = ['1', '10', '10(-1)', '10(-2)', '10(-3)', 'negat10', 'posit10']
+ops = ['softmax', 'GeLU', 'tanh', 'swish']
+for range in ranges:
+    print("*"*40)
+    print(f'\n\n{range}')  
+    with open(f'/home/rudfhr0314/HYU/BDSL/operation_profiling/tensors/input_tensor/input_tensor_{range}.pickle', 'rb') as fr:
+        input = pickle.load(fr)
+        print(f'input : {input[0][0][:10]}\n\n')
+    for op in ops:
+        with open(f'/home/rudfhr0314/HYU/BDSL/operation_profiling/tensors/tpu_output/{range}/tpu_torch_{op}_output.pickle', 'rb') as fr:
+            output = pickle.load(fr)
+            print(f'{op}_output : {output[0][0][:5]}\n\n')
+      
+      
+      
+#---------------------------------------------------
 
-def re_mean(x):
-    mean = torch.mean(x)
-    return mean.item()
+# device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+# data = torch.tensor(np.array([3.2, 6.1, 0.02, 0.156]))
+# data = data.to(device)
 
-for op_name, op_val in result.items():
-    for device, op_result in op_val.items():
-        mean = re_mean(op_result)
-        item = {
-            'op' : op_name,
-            'device' : device,
-            'mean' : mean
-        }
-        mean_result.append(item)
-    """
-    print(op_name, op_val)
-    break
-    """
-result_pd = pd.DataFrame(mean_result)
-pprint(result_pd)
-
-
-result_pd.to_csv('./tensors/mean.csv')
+# print("-"*40)
+# print('\n\n')
+# model = nn.Softmax(dim=0)
+# model.to(device)
+# softmax_output = model(data)
+# print(f"softmax_output : {softmax_output}")
