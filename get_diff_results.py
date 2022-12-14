@@ -80,8 +80,11 @@ if __name__=='__main__':
     pprint(df_prob)
     
 
-    result_pd.to_csv('./result_gpu_base/m1_gpu/posit10/result.csv')
-    df_ratio_mean.to_csv('./result_gpu_base/m1_gpu/posit10/result_ratio_mean.csv')
-    df_ratio_top5.to_csv('./result_gpu_base/m1_gpu/posit10/result_ratio_top5.csv')
-    df_ratio_bottom5.to_csv('./result_gpu_base/m1_gpu/posit10/result_ratio_bottom5.csv')
-    df_prob.to_csv('./result_gpu_base/m1_gpu/posit10/result_prob.csv')
+    # result_pd.to_csv('./result_gpu_base/m1_gpu/posit10/result.csv')
+    # df_ratio_mean.to_csv('./result_gpu_base/m1_gpu/posit10/result_ratio_mean.csv')
+    # df_ratio_top5.to_csv('./result_gpu_base/m1_gpu/posit10/result_ratio_top5.csv')
+    # df_ratio_bottom5.to_csv('./result_gpu_base/m1_gpu/posit10/result_ratio_bottom5.csv')
+    # df_prob.to_csv('./result_gpu_base/m1_gpu/posit10/result_prob.csv')
+    
+    
+    
