@@ -35,14 +35,16 @@ def get_diff_prob(x, y):
 
 
 if __name__=='__main__':
-    device_list = ['gpu', 'tpu']
-    device_name = 'tpu'
+    device_list = ['gpu', 'm1']
+    device_name = 'm1'
     op_list = ['softmax', 'GeLU', 'tanh', 'swish']
     op_result = {}
     
-    ranges = ['-1~-0.3', '-0.3~0.3', '0.3~1']
+    ranges = ranges = ['1', '10(-1)', '10(-2)']
+    # ranges = ['-1~-0.3', '-0.3~0.3', '0.3~1']
     
     for range in ranges:
+        print(f"\n\nrange: {range}\n")
         for op in op_list:
             op_result[op] = {}
             for device in device_list:
@@ -85,14 +87,14 @@ if __name__=='__main__':
         pprint(df_prob)
         
         
-        path = f'./result_gpu_base/{device_name}/{range}'
-        if not os.path.isdir(path):
-            os.makedirs(path)
-        result_pd.to_csv(f'./result_gpu_base/{device_name}/{range}/result.csv')
-        df_ratio_mean.to_csv(f'./result_gpu_base/{device_name}/{range}/result_ratio_mean.csv')
-        df_ratio_top5.to_csv(f'./result_gpu_base/{device_name}/{range}/result_ratio_top5.csv')
-        df_ratio_bottom5.to_csv(f'./result_gpu_base/{device_name}/{range}/result_ratio_bottom5.csv')
-        df_prob.to_csv(f'./result_gpu_base/{device_name}/{range}/result_prob.csv')
+        # path = f'./result_gpu_base/{device_name}/{range}'
+        # if not os.path.isdir(path):
+        #     os.makedirs(path)
+        # result_pd.to_csv(f'./result_gpu_base/{device_name}/{range}/result.csv')
+        # df_ratio_mean.to_csv(f'./result_gpu_base/{device_name}/{range}/result_ratio_mean.csv')
+        # df_ratio_top5.to_csv(f'./result_gpu_base/{device_name}/{range}/result_ratio_top5.csv')
+        # df_ratio_bottom5.to_csv(f'./result_gpu_base/{device_name}/{range}/result_ratio_bottom5.csv')
+        # df_prob.to_csv(f'./result_gpu_base/{device_name}/{range}/result_prob.csv')
         
         
     
