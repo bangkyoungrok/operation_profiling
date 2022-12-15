@@ -5,13 +5,6 @@ import pickle
 import numpy as np
 
 
-
-
-
-
-
-
-
 ranges = ['1', '10', '10(-1)', '10(-2)', '10(-3)', 'negat10', 'posit10']
 #ops = ['softmax', 'GeLU', 'tanh', 'swish']
 
