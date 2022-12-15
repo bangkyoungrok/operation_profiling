@@ -3,6 +3,7 @@ import pickle
 import pandas
 import pandas as pd
 from pprint import pprint
+import os
 
 def get_diff_prob(x, y):
     diff = torch.abs(x-y)
@@ -34,57 +35,64 @@ def get_diff_prob(x, y):
 
 
 if __name__=='__main__':
-    device_list = ['gpu', 'm1']
+    device_list = ['gpu', 'tpu']
+    device_name = 'tpu'
     op_list = ['softmax', 'GeLU', 'tanh', 'swish']
     op_result = {}
+    
+    ranges = ['-1~-0.3', '-0.3~0.3', '0.3~1']
+    
+    for range in ranges:
+        for op in op_list:
+            op_result[op] = {}
+            for device in device_list:
+                with open(f"./tensors/{device}_output/{range}/{device}_torch_{op}_output.pickle", "rb") as fr:
+                    op_result[op][device] = pickle.load(fr)
 
-    for op in op_list:
-        op_result[op] = {}
-        for device in device_list:
-            with open(f"./tensors/{device}_output/posit10/{device}_torch_{op}_output.pickle", "rb") as fr:
-                op_result[op][device] = pickle.load(fr)
+        diff_result = []            
+        for op_name, op_val in op_result.items():
+            for device, op_result_tensor in op_val.items():
+                ratio_mean,ratio_top5, ratio_bottom5 , prob = get_diff_prob(op_val['gpu'], op_result_tensor)
+                item = {
+                    'op' : op_name,
+                    'device' : device,
+                    'ratio_mean' : ratio_mean,
+                    'ratio_top5' : ratio_top5,
+                    'ratio_bottom5' : ratio_bottom5,
+                    'prob' : prob
+                }
+                
+                diff_result.append(item)
+                
+        result_pd = pd.DataFrame(diff_result)
+        pprint(result_pd)
 
-    diff_result = []            
-    for op_name, op_val in op_result.items():
-        for device, op_result_tensor in op_val.items():
-            ratio_mean,ratio_top5, ratio_bottom5 , prob = get_diff_prob(op_val['gpu'], op_result_tensor)
-            item = {
-                'op' : op_name,
-                'device' : device,
-                'ratio_mean' : ratio_mean,
-                'ratio_top5' : ratio_top5,
-                'ratio_bottom5' : ratio_bottom5,
-                'prob' : prob
-            }
-            
-            diff_result.append(item)
-            
-    result_pd = pd.DataFrame(diff_result)
-    pprint(result_pd)
-
-    df_ratio_mean = pd.pivot(result_pd, index='op', columns='device', values='ratio_mean')
-    print('\n\nratio_mean\n')
-    pprint(df_ratio_mean)
-    
-    df_ratio_top5 = pd.pivot(result_pd, index='op', columns='device', values='ratio_top5')
-    print('\n\nratio_top5\n')
-    pprint(df_ratio_top5)
-    
-    df_ratio_bottom5 = pd.pivot(result_pd, index='op', columns='device', values='ratio_bottom5')
-    print('\n\nratio_bottom5\n')
-    pprint(df_ratio_bottom5)
-    
-    
-    df_prob = pd.pivot(result_pd, index='op', columns='device', values='prob')
-    print('\n\ndiff_prob\n')
-    pprint(df_prob)
-    
-
-    # result_pd.to_csv('./result_gpu_base/m1_gpu/posit10/result.csv')
-    # df_ratio_mean.to_csv('./result_gpu_base/m1_gpu/posit10/result_ratio_mean.csv')
-    # df_ratio_top5.to_csv('./result_gpu_base/m1_gpu/posit10/result_ratio_top5.csv')
-    # df_ratio_bottom5.to_csv('./result_gpu_base/m1_gpu/posit10/result_ratio_bottom5.csv')
-    # df_prob.to_csv('./result_gpu_base/m1_gpu/posit10/result_prob.csv')
-    
-    
+        df_ratio_mean = pd.pivot(result_pd, index='op', columns='device', values='ratio_mean')
+        print('\n\nratio_mean\n')
+        pprint(df_ratio_mean)
+        
+        df_ratio_top5 = pd.pivot(result_pd, index='op', columns='device', values='ratio_top5')
+        print('\n\nratio_top5\n')
+        pprint(df_ratio_top5)
+        
+        df_ratio_bottom5 = pd.pivot(result_pd, index='op', columns='device', values='ratio_bottom5')
+        print('\n\nratio_bottom5\n')
+        pprint(df_ratio_bottom5)
+        
+        
+        df_prob = pd.pivot(result_pd, index='op', columns='device', values='prob')
+        print('\n\ndiff_prob\n')
+        pprint(df_prob)
+        
+        
+        path = f'./result_gpu_base/{device_name}/{range}'
+        if not os.path.isdir(path):
+            os.makedirs(path)
+        result_pd.to_csv(f'./result_gpu_base/{device_name}/{range}/result.csv')
+        df_ratio_mean.to_csv(f'./result_gpu_base/{device_name}/{range}/result_ratio_mean.csv')
+        df_ratio_top5.to_csv(f'./result_gpu_base/{device_name}/{range}/result_ratio_top5.csv')
+        df_ratio_bottom5.to_csv(f'./result_gpu_base/{device_name}/{range}/result_ratio_bottom5.csv')
+        df_prob.to_csv(f'./result_gpu_base/{device_name}/{range}/result_prob.csv')
+        
+        
     
